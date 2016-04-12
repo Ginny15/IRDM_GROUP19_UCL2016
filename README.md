@@ -1,6 +1,5 @@
 # IRDM_Group_7_GEF
 This repository is for IRDM group project. 
-
 Members:  
 
 Data: Global Energy Forecasting Competition 2012 - Load Forecasting 
