@@ -89,6 +89,7 @@ xgb_train_zone4_with_time <- whole_zone4_with_time[xgb_train_ind_zone4_with_time
 xgb_test_zone4_with_time <- whole_zone4_with_time[-xgb_train_ind_zone4_with_time,]
 
 fit.xgb.zone4 = train(load ~., data=xgb_train_zone4_with_time, method = "xgbTree", trControl = control)
+
 #Testing on the test set
 xgb_test_zone4_with_time_X <- xgb_test_zone4_with_time[,!(colnames(xgb_test_zone4_with_time) %in% c("load"))]
 xgb_test_zone4_with_time_y <- xgb_test_zone4_with_time[,"load"]
@@ -110,6 +111,13 @@ xgb_test_zone8_with_time <- whole_zone8_with_time[-xgb_train_ind_zone8_with_time
 
 fit.xgb.zone8 = train(load ~., data=xgb_train_zone8_with_time, method = "xgbTree", trControl = control)
 
+
+#Testing on the test set
+xgb_test_zone8_with_time_X <- xgb_test_zone8_with_time[,!(colnames(xgb_test_zone8_with_time) %in% c("load"))]
+xgb_test_zone8_with_time_y <- xgb_test_zone8_with_time[,"load"]
+pred_zone8_with_time <- predict(fit.xgb.zone8, xgb_test_zone8_with_time_X)
+postResample(pred_zone8_with_time,xgb_test_zone8_with_time_y)
+
 #get importance score from the optimal xgboost model and avoids the normalisation
 #step by setting scale to FALSE 
 xgb_importance_zone8 <- varImp(fit.xgb.zone8,scale=TRUE)
@@ -125,6 +133,12 @@ xgb_test_zone12_with_time <- whole_zone12_with_time[-xgb_train_ind_zone12_with_t
 
 fit.xgb.zone12 = train(load ~., data=xgb_train_zone12_with_time, method = "xgbTree", trControl = control)
 
+#Testing on the test set
+xgb_test_zone12_with_time_X <- xgb_test_zone12_with_time[,!(colnames(xgb_test_zone12_with_time) %in% c("load"))]
+xgb_test_zone12_with_time_y <- xgb_test_zone12_with_time[,"load"]
+pred_zone12_with_time <- predict(fit.xgb.zone12, xgb_test_zone12_with_time_X)
+postResample(pred_zone12_with_time,xgb_test_zone12_with_time_y)
+
 #get importance score from the optimal xgboost model and avoids the normalisation
 #step by setting scale to FALSE 
 xgb_importance_zone12 <- varImp(fit.xgb.zone12,scale=TRUE)
@@ -139,6 +153,12 @@ xgb_train_zone18_with_time <- whole_zone18_with_time[xgb_train_ind_zone18_with_t
 xgb_test_zone18_with_time <- whole_zone18_with_time[-xgb_train_ind_zone18_with_time,]
 
 fit.xgb.zone18 = train(load ~., data=xgb_train_zone18_with_time, method = "xgbTree", trControl = control)
+
+#Testing on the test set
+xgb_test_zone18_with_time_X <- xgb_test_zone18_with_time[,!(colnames(xgb_test_zone18_with_time) %in% c("load"))]
+xgb_test_zone18_with_time_y <- xgb_test_zone18_with_time[,"load"]
+pred_zone18_with_time <- predict(fit.xgb.zone18, xgb_test_zone18_with_time_X)
+postResample(pred_zone18_with_time,xgb_test_zone18_with_time_y)
 
 #get importance score from the optimal xgboost model and avoids the normalisation
 #step by setting scale to FALSE 
