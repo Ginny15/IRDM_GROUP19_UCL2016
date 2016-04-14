@@ -1,0 +1,63 @@
+memory.limit(32324)
+library(data.table)  
+library(Metrics)
+library(forecast)
+library(tseries)
+library(plyr)
+require(dplyr)
+library(tidyr)
+library(ggplot2)
+library(caret)
+library(readr)
+require(gbm)
+
+# data preprocessing
+#read the original data and remove the comma inside load_history data
+setwd("E:/GoogleDrive/Academic/Information_Retrieval_and_Data_Mining/Group")
+load_history <- read.csv("Load_history.csv")
+
+#omit weeks with missing value, i.e those weeks need to be predicted
+load_history <- na.omit(load_history)
+col2cvt <- 5:28
+load_history[,col2cvt] <- lapply(load_history[,col2cvt],function(x){as.numeric(gsub(",", "", x))})
+
+#tidy load_history data into the format we need to input to the model
+#transform the row into column and make it hourly time series data
+load_history_tidy <- load_history %>%  gather(hour, load, h1:h24)
+load_history_tidy$hour <- sapply(load_history_tidy$hour, function(x) strsplit(x,"h")[[1]][2])
+load_history_tidy$hour <- as.numeric(load_history_tidy$hour)
+
+#read the original data and remove the comma inside load_history data
+temperature_history <- read.csv("temperature_history.csv")
+
+#remove the incomplete data of the last day
+temperature_history <- na.omit(temperature_history)
+
+#transform temperature data into time series and list the data of each station
+temperature_history_tidy <- temperature_history %>%  gather(hour, temp, h1:h24)
+temperature_history_tidy$hour <- sapply(temperature_history_tidy$hour, function(x) strsplit(x,"h")[[1]][2])
+temperature_history_tidy$hour <- as.numeric(temperature_history_tidy$hour)
+temperature_history_tidy <- spread(temperature_history_tidy, key = station_id, value = temp)
+colnames(temperature_history_tidy)[5:15] <- sapply(
+  colnames(temperature_history_tidy)[5:15],function(x) paste("station",x,sep="_")
+)
+
+#merge the original history load data frame with temperature data of each station
+whole = left_join(load_history_tidy,temperature_history_tidy, by=c("year","month","day","hour"))
+
+for (i in 1:17){
+  whole[[i]] <- as.numeric(whole[[i]])
+}
+for (i in 1:4){
+  whole[[i]] <- as.factor(whole[[i]])
+}
+
+# @han yang
+
+#use exponential smoothing forecasting without information of temprature
+load_history_new <- as.ts(load_history)
+load_history_new_components <- decompose(load_history_new)
+load_history_pred_expo <-HoltWinters(load_history_new,beta=FALSE,gamma=FALSE)
+
+# xgboost model
+whole_with_time = whole
