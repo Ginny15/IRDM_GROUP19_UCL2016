@@ -61,3 +61,87 @@ load_history_pred_expo <-HoltWinters(load_history_new,beta=FALSE,gamma=FALSE)
 
 # xgboost model
 whole_with_time = whole
+whole_with_time$load <- as.integer(whole_with_time$load)
+whole_with_time$year<-as.factor(whole_with_time$year)
+whole_with_time$month<-as.factor(whole_with_time$month)
+whole_with_time$day<-as.factor(whole_with_time$day)
+whole_with_time$hour<-as.factor(whole_with_time$hour)
+whole_with_time$zone_id <- as.factor(whole_with_time$zone_id)
+
+whole_zone4_with_time <- whole_with_time[whole_with_time$zone_id==4,]
+whole_zone8_with_time <- whole_with_time[whole_with_time$zone_id==8,]
+whole_zone12_with_time <- whole_with_time[whole_with_time$zone_id==12,]
+whole_zone18_with_time <- whole_with_time[whole_with_time$zone_id==17,]
+
+#Data set splitting for xgboost(80% for training and 20% for testing) with whole dataset
+sample_size <- floor(0.80 * nrow(whole_with_time))
+set.seed(123)
+xgb_train_ind <- sample(seq_len(nrow(whole_with_time)), size = sample_size)
+
+xgb_train <- whole_with_time[xgb_train_ind,]
+xgb_test <- whole_with_time[-xgb_train_ind,]
+
+#Data set splitting of the original dataset of zone4 for xgboost(80% for training and 20% for testing)
+sample_size_zone4_with_time <- floor(0.80 * nrow(whole_zone4_with_time))
+set.seed(123)
+xgb_train_ind_zone4_with_time <- sample(seq_len(nrow(whole_zone4_with_time)), size = sample_size_zone4_with_time)
+xgb_train_zone4_with_time <- whole_zone4_with_time[xgb_train_ind_zone4_with_time,]
+xgb_test_zone4_with_time <- whole_zone4_with_time[-xgb_train_ind_zone4_with_time,]
+
+fit.xgb.zone4 = train(load ~., data=xgb_train_zone4_with_time, method = "xgbTree", trControl = control)
+#Testing on the test set
+xgb_test_zone4_with_time_X <- xgb_test_zone4_with_time[,!(colnames(xgb_test_zone4_with_time) %in% c("load"))]
+xgb_test_zone4_with_time_y <- xgb_test_zone4_with_time[,"load"]
+pred_zone4_with_time <- predict(fit.xgb.zone4, xgb_test_zone4_with_time_X)
+postResample(pred_zone4_with_time,xgb_test_zone4_with_time_y)
+
+#get importance score from the optimal xgboost model and avoids the normalisation
+#step by setting scale to FALSE 
+xgb_importance_zone4 <- varImp(fit.xgb.zone4,scale=TRUE)
+xgb_importance_zone4
+plot(xgb_importance_zone4,10)
+
+#Data set splitting of the original dataset of zone8 for xgboost(80% for training and 20% for testing)
+sample_size_zone8_with_time <- floor(0.80 * nrow(whole_zone8_with_time))
+set.seed(123)
+xgb_train_ind_zone8_with_time <- sample(seq_len(nrow(whole_zone8_with_time)), size = sample_size_zone8_with_time)
+xgb_train_zone8_with_time <- whole_zone8_with_time[xgb_train_ind_zone8_with_time,]
+xgb_test_zone8_with_time <- whole_zone8_with_time[-xgb_train_ind_zone8_with_time,]
+
+fit.xgb.zone8 = train(load ~., data=xgb_train_zone8_with_time, method = "xgbTree", trControl = control)
+
+#get importance score from the optimal xgboost model and avoids the normalisation
+#step by setting scale to FALSE 
+xgb_importance_zone8 <- varImp(fit.xgb.zone8,scale=TRUE)
+xgb_importance_zone8
+plot(xgb_importance_zone8,10)
+
+#Data set splitting of the original dataset of zone12 for xgboost(80% for training and 20% for testing)
+sample_size_zone12_with_time <- floor(0.80 * nrow(whole_zone12_with_time))
+set.seed(123)
+xgb_train_ind_zone12_with_time <- sample(seq_len(nrow(whole_zone12_with_time)), size = sample_size_zone12_with_time)
+xgb_train_zone12_with_time <- whole_zone12_with_time[xgb_train_ind_zone12_with_time,]
+xgb_test_zone12_with_time <- whole_zone12_with_time[-xgb_train_ind_zone12_with_time,]
+
+fit.xgb.zone12 = train(load ~., data=xgb_train_zone12_with_time, method = "xgbTree", trControl = control)
+
+#get importance score from the optimal xgboost model and avoids the normalisation
+#step by setting scale to FALSE 
+xgb_importance_zone12 <- varImp(fit.xgb.zone12,scale=TRUE)
+xgb_importance_zone12
+plot(xgb_importance_zone12,10)
+
+#Data set splitting of the original dataset of zone12 for xgboost(80% for training and 20% for testing)
+sample_size_zone18_with_time <- floor(0.80 * nrow(whole_zone18_with_time))
+set.seed(123)
+xgb_train_ind_zone18_with_time <- sample(seq_len(nrow(whole_zone18_with_time)), size = sample_size_zone18_with_time)
+xgb_train_zone18_with_time <- whole_zone18_with_time[xgb_train_ind_zone18_with_time,]
+xgb_test_zone18_with_time <- whole_zone18_with_time[-xgb_train_ind_zone18_with_time,]
+
+fit.xgb.zone18 = train(load ~., data=xgb_train_zone18_with_time, method = "xgbTree", trControl = control)
+
+#get importance score from the optimal xgboost model and avoids the normalisation
+#step by setting scale to FALSE 
+xgb_importance_zone18 <- varImp(fit.xgb.zone18,scale=TRUE)
+xgb_importance_zone18
+plot(xgb_importance_zone18,10)
