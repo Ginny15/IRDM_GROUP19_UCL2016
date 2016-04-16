@@ -1,5 +1,4 @@
-setwd("E:/GoogleDrive/Academic/Information_Retrieval_and_Data_Mining/Group")
-test <- read.csv("IRDMGroupPrediction.csv")
+test <- read.csv("../csv/IRDMGroupPrediction.csv")
 for (i in 1:11){
   test[[8]]<-NULL  
 }
@@ -33,4 +32,4 @@ for (i in 1:63){
   submission.sum <- rbind(submission.sum,submission.seg,row.sum)
 }
 submission.sum$id <- 1:nrow(submission.sum)
-write.csv(submission.sum,"submission.csv",row.names=FALSE)
+write.csv(submission.sum,"../output/submission.csv",row.names=FALSE)
