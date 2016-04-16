@@ -2,9 +2,8 @@ require(dplyr)
 library(tidyr)
 
 # data preprocessing
-setwd("E:/GoogleDrive/Academic/Information_Retrieval_and_Data_Mining/Group")
-load_history <- read.csv("Load_history.csv")
-temperature_history <- read.csv("temperature_history.csv")
+load_history <- read.csv("../input/Load_history.csv")
+temperature_history <- read.csv("../input/temperature_history.csv")
 
 # removing the comma in the load data
 col2cvt <- 5:28
@@ -28,4 +27,4 @@ colnames(temperature_history_tidy)[5:15] <- sapply(
 whole = left_join(load_history_tidy,temperature_history_tidy,
                   by=c("year","month","day","hour"))
 
-write.csv(whole,"whole.csv", row.names = FALSE)
+#write.csv(whole,"../input/whole.csv", row.names = FALSE)
