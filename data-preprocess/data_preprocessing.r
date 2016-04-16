@@ -9,11 +9,11 @@ temperature_history <- read.csv("../input/temperature_history.csv")
 col2cvt <- 5:28
 load_history[,col2cvt] <- lapply(load_history[,col2cvt],function(x){as.numeric(gsub(",", "", x))})
 
-# takes columns h1:h24, and gathers them into (hour, load) pairs
+# taking columns h1:h24, and gathering them into (hour, load) pairs
 load_history_tidy <- load_history %>%  gather(hour, load, h1:h24)
 load_history_tidy$hour <- sapply(load_history_tidy$hour, function(x) as.numeric(strsplit(x,"h")[[1]][2]))
 
-# takes columns h1:h24, and gathers them into (hour, temperature) pairs
+# taking columns h1:h24, and gathering them into (hour, temperature) pairs
 temperature_history_tidy <- temperature_history %>%  gather(hour, temp, h1:h24)
 temperature_history_tidy$hour <- sapply(temperature_history_tidy$hour, function(x) as.numeric(strsplit(x,"h")[[1]][2]))
 
