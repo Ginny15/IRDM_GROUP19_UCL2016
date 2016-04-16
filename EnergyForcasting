@@ -53,11 +53,33 @@ for (i in 1:4){
 }
 
 # @han yang
+#stationarity test
+
+#auto-correlation function
+Acf(log_value)
+
+#partial auto-correlation function
+Pacf(log_value)
+
+#The Augmented Dickey-Fuller(ADF) t-statistic test: small p-values suggest the data is stationary
+#and doesn’t need to be differenced stationarity
+adf.test(log_value,"stationary")
+
+#The Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test; here accepting the null hypothesis means that
+#the series is stationarity, and small p-values suggest that the series is not stationary and a differencing is required.
+kpss.test(log_value)
 
 #use exponential smoothing forecasting without information of temprature
 load_history_new <- as.ts(load_history)
 load_history_new_components <- decompose(load_history_new)
 load_history_pred_expo <-HoltWinters(load_history_new,beta=FALSE,gamma=FALSE)
+
+#do experiment on neural network model
+fit.nn.zone1 = train(load ~., data=xgb_train_zone1_with_time, method = "nnet", trControl = control)
+fit.nn.zone4 = train(load ~., data=xgb_train_zone4_with_time, method = "nnet", trControl = control)
+fit.nn.zone8 = train(load ~., data=xgb_train_zone8_with_time, method = "nnet", trControl = control)
+fit.nn.zone12 = train(load ~., data=xgb_train_zone12_with_time, method = "nnet", trControl = control)
+fit.nn.zone18 = train(load ~., data=xgb_train_zone18_with_time, method = "nnet", trControl = control)
 
 # xgboost model
 whole_with_time = whole
@@ -165,3 +187,48 @@ postResample(pred_zone18_with_time,xgb_test_zone18_with_time_y)
 xgb_importance_zone18 <- varImp(fit.xgb.zone18,scale=TRUE)
 xgb_importance_zone18
 plot(xgb_importance_zone18,10)
+
+# backcasting and forcasting
+#1.read the data that needs to predict
+setwd("/Users/Graceyh/Desktop/IRDM/Groupwork/IRDMData")
+load_pred_all_zones <- read.csv("Backcast&Forecast.csv")
+load_pred_all_zones$year<-as.factor(load_pred_all_zones$year)
+load_pred_all_zones$month<-as.factor(load_pred_all_zones$month)
+load_pred_all_zones$day<-as.factor(load_pred_all_zones$day)
+load_pred_all_zones$hour<-as.factor(load_pred_all_zones$hour)
+load_pred_all_zones$zone_id <- as.factor(load_pred_all_zones$zone_id)
+#prepare for the prediction input
+xgb_pred_final_X <- load_pred_all_zones[,!(colnames(load_pred_all_zones) %in% c("load"))]
+xgb_pred_final_y <- load_pred_all_zones[,"load"]
+
+#make prediction based on xgboost model
+#1.read the data that needs to predict
+setwd("/Users/Graceyh/Desktop/IRDM/Groupwork/IRDMData")
+load_pred_all_zones <- read.csv("Backcast&Forecast.csv")
+
+#make prediction
+load_pred_all_zones$year<-as.factor(load_pred_all_zones$year)
+load_pred_all_zones$month<-as.factor(load_pred_all_zones$month)
+load_pred_all_zones$day<-as.factor(load_pred_all_zones$day)
+load_pred_all_zones$hour<-as.factor(load_pred_all_zones$hour)
+load_pred_all_zones$zone_id <- as.factor(load_pred_all_zones$zone_id)
+
+#prepare for the prediction input
+xgb_pred_final_X <- load_pred_all_zones[,!(colnames(load_pred_all_zones) %in% c("load"))]
+xgb_pred_final_y <- load_pred_all_zones[,"load"]
+
+pred_final <-predict(fit.xgb, xgb_pred_final_X)
+
+load_pred_all_zones$load <- pred_final
+load_pred_all_zones_new <- load_pred_all_zones
+load_pred_all_zones_new <- load_pred_all_zones_new[,1:6]
+
+load_pred_all_zones_new <- spread(load_pred_all_zones_new, key = hour, value = load)
+
+load_pred_all_zones_new$year <- as.numeric(load_pred_all_zones_new$year)
+load_pred_all_zones_new$month <- as.numeric(load_pred_all_zones_new$month)
+load_pred_all_zones_new$day <- as.numeric(load_pred_all_zones_new$day)
+load_pred_all_zones_new_group <- load_pred_all_zones_new[order(load_pred_all_zones_new$day,load_pred_all_zones_new$month,load_pred_all_zones_new$year),]
+View(load_pred_all_zones_new_group)
+write.csv(load_pred_all_zones,"IRDMGroupPrediction.csv")
+
