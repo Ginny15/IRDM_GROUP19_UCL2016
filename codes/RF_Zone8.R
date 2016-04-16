@@ -1,23 +1,25 @@
-## Read the data file (Cleansing and Munging have been finished)
-# wholeRF <- read.csv("C:/Users/ShaneKong/Desktop/IRDM_group/wholeRF.csv", header = T)
 
+## Read the data file (Cleansing and Munging have been finished)
+source("data_preprocessing.r")
+
+whole$load <- as.integer(whole$load)
 
 ## omit rows with NA values
-# wholeRF <- data.frame(na.omit (wholeRF))
+whole <- data.frame(na.omit (whole))
 
 
 ## Change some numerical variables to categorical variables
-wholeRF$zone_id<- as.factor(wholeRF$zone_id)
-wholeRF$year <- as.factor(wholeRF$year)
-wholeRF$month <- as.factor(wholeRF$month)
-wholeRF$day <- as.factor(wholeRF$day)
-wholeRF$hour <- as.factor(wholeRF$hour)
+whole$zone_id<- as.factor(whole$zone_id)
+whole$year <- as.factor(whole$year)
+whole$month <- as.factor(whole$month)
+whole$day <- as.factor(whole$day)
+whole$hour <- as.factor(whole$hour)
 
-data.class(wholeRF$year)
+data.class(whole$year)
 
 
 ## Extracting 'zone == 8' // Extract a subset
-zone8 <- subset(wholeRF, select = c(year, month, day, hour, load, station_1, station_2, station_3, station_4,
+zone8 <- subset(whole, select = c(year, month, day, hour, load, station_1, station_2, station_3, station_4,
                                     station_5, station_6, station_7, station_8, station_9,
                                     station_10, station_11), subset=(zone_id == 8))
 
