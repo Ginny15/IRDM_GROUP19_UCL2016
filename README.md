@@ -1,4 +1,4 @@
-# IRDM_Group_7_GEF
+# IRDM_GROUP19_UCL2016
 This repository is for IRDM group project. 
 
 Members:  Xue Hu, Han Yang, Ji Zhou and Seunghwan Kong
