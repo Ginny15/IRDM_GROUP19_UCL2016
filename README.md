@@ -1,6 +1,7 @@
 # IRDM_Group_7_GEF
 This repository is for IRDM group project. 
-Members:  
+
+Members:  Xue Hu, Han Yang, Ji Zhou and Seunghwan Kong
 
 Data: Global Energy Forecasting Competition 2012 - Load Forecasting 
 
